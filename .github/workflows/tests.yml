@@ -15,14 +15,22 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Check files
-        run: ls -la
-
-
       - name: Install dependencies
         run: pip install -r requirements.txt
 
       - name: Run tests
+        run: pytest tests/ -v
         env:
           STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
-        run: pytest tests/ -v
+
+      - name: Send Telegram notification
+        if: always()
+        run: |
+          if [ "${{ job.status }}" == "success" ]; then
+            MSG="✅ Тесты прошли успешно"
+          else
+            MSG="❌ Тесты упали"
+          fi
+          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage" \
+          -d chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
+          -d text="$MSG"
