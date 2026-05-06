@@ -56,3 +56,11 @@ jobs:
           ls -la allure-results/ || echo "Directory empty or missing"
           echo "=== First file content ==="
           cat allure-results/*.json 2>/dev/null | head -50 || echo "No json files"
+
+      - name: Deploy Allure to GitHub Pages
+        if: always()
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: allure-report
+          publish_branch: gh-pages
