@@ -37,12 +37,13 @@ jobs:
       - name: Send Telegram notification
         if: always()
         run: |
-          PASSED=$(grep -r '"status":"passed"' allure-results | wc -l)
-          FAILED=$(grep -r '"status":"failed"' allure-results | wc -l)
+          PASSED=$(find allure-results -name "*.json" | xargs grep -l '"status":"passed"' 2>/dev/null | wc -l)
+          FAILED=$(find allure-results -name "*.json" | xargs grep -l '"status":"failed"' 2>/dev/null | wc -l)
+          TOTAL=$((PASSED + FAILED))
           if [ "${{ job.status }}" == "success" ]; then
-            MSG="✅ Тесты прошли%0A✔ Passed: $PASSED%0A❌ Failed: $FAILED"
+            MSG="✅ Stripe API Tests%0A%0A✔ Passed: $PASSED%0A❌ Failed: $FAILED%0A📊 Total: $TOTAL"
           else
-            MSG="❌ Тесты упали%0A✔ Passed: $PASSED%0A❌ Failed: $FAILED"
+            MSG="❌ Stripe API Tests FAILED%0A%0A✔ Passed: $PASSED%0A❌ Failed: $FAILED%0A📊 Total: $TOTAL"
           fi
           curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage" \
           -d chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
