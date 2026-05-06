@@ -37,8 +37,8 @@ jobs:
       - name: Send Telegram notification
         if: always()
         run: |
-          PASSED=$(find allure-results -name "*.json" | xargs grep -l '"status":"passed"' 2>/dev/null | wc -l)
-          FAILED=$(find allure-results -name "*.json" | xargs grep -l '"status":"failed"' 2>/dev/null | wc -l)
+          PASSED=$(find allure-results -name "*-result.json" -exec grep -l '"status":"passed"' {} \; | wc -l)
+          FAILED=$(find allure-results -name "*-result.json" -exec grep -l '"status":"failed"' {} \; | wc -l)
           TOTAL=$((PASSED + FAILED))
           if [ "${{ job.status }}" == "success" ]; then
             MSG="✅ Stripe API Tests%0A%0A✔ Passed: $PASSED%0A❌ Failed: $FAILED%0A📊 Total: $TOTAL"
