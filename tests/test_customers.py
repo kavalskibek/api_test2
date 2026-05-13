@@ -9,9 +9,13 @@ def test_create_customer(stripe_api):
     }
 
     response = stripe_api.post(f'customers', data=data)
-    print(response.json())
-    assert response.status_code == 200
 
-    customer_model = CustomerResponse(**response.json())
-    assert customer_model.id.startswith('cus')
-    assert customer_model.name == 'Doe'
+    assert response.status_code == 200, f'Expected 200, got response {response.status_code}'
+
+
+    customer = CustomerResponse(**response.json())
+    assert customer.email == data['email']
+    assert customer.name == data['name']
+
+    del_response = stripe_api.delete_customer(customer.id)
+    assert del_response.status_code == 200

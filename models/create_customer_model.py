@@ -1,7 +1,7 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr, Field
 
 class CustomerResponse(BaseModel):
     id: str
-    email: str
+    object: str = Field(pattern="^customer$")
+    email: EmailStr
     name: str
-    object: str
